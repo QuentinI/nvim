@@ -201,6 +201,7 @@ in
         server = {
           on_attach = LSPCommon.on_attach,
           capabilities = LSPCommon.capabilities,
+          standalone = false,
           settings = {
             ["rust-analyzer"] = {
               checkOnSave = {
@@ -213,6 +214,7 @@ in
         }
       })
     '';
+    optional = true;
   }
   # Autocompletion
   # https://github.com/hrsh7th/nvim-cmp
