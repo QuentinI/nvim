@@ -1,4 +1,4 @@
-# My Neovim configuration
+# This is my config. There are many like it, but this one is mine.
 
 To try it out:
 
