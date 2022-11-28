@@ -1,5 +1,9 @@
 {
   inputs = {
+    flake-compat = {
+      url = "github:edolstra/flake-compat";
+      flake = false;
+    };
     flake-utils.url = "github:numtide/flake-utils/master";
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
   };
@@ -106,9 +110,9 @@
               ] ++ runtime;
           };
 
-        defaultPackage = mkNeovim { inherit pkgs; };
-        devShell = pkgs.mkShell {
-          buildInputs = [ defaultPackage ];
+        packages.default = mkNeovim { inherit pkgs; };
+        devShells.default = pkgs.mkShell {
+          buildInputs = [ packages.default ];
         };
         overlay = _: prev: {
           neovim = mkNeovim { pkgs = prev; };
