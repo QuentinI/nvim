@@ -7,6 +7,7 @@
   outputs = { flake-utils, nixpkgs, ... }@inputs:
     flake-utils.lib.eachDefaultSystem (system:
       let
+        pkgs = import nixpkgs { inherit system; };
         utils = rec {
           vimscript = conf: conf;
           lua = conf: ''
@@ -65,8 +66,11 @@
           in
           pkgs.wrapNeovimUnstable pkgs.neovim-unwrapped config;
       in
-      {
-        defaultPackage = mkNeovim (import nixpkgs { inherit system; });
+      rec {
+        defaultPackage = mkNeovim pkgs;
+        devShell = pkgs.mkShell {
+          buildInputs = [ defaultPackage ];
+        };
         overlay = _: prev: {
           neovim = mkNeovim prev;
         };
