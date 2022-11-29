@@ -65,10 +65,6 @@ in
       -- A global for other plugins
       LSPCommon = {
         commands = {
-          diagnostic = {
-            keys = '<leader>e',
-            cmd = '<cmd>lua vim.diagnostic.open_float({border = "single"})<CR>',
-          },
           code_action = {
             keys = '<leader>ca',
             cmd = '<cmd>lua vim.lsp.buf.code_action()<CR>'
@@ -227,6 +223,29 @@ in
               require('cmp').setup.buffer({ sources = { { name = "crates" } } })
           end,
       })
+    '';
+  }
+  {
+    plugin = lsp_lines-nvim;
+    config = lua ''
+      require("lsp_lines").setup()
+
+      -- Don't show virtual lines by default
+      vim.diagnostic.config({
+        virtual_lines = false,
+        virtual_text = true 
+      })
+
+      -- Toggle
+      LSPCommon.toggle_diagnostics = function()
+        local lines = not vim.diagnostic.config().virtual_lines
+        local text = not vim.diagnostic.config().virtual_text
+        vim.diagnostic.config({ virtual_lines = lines, virtual_text = text })
+      end
+      LSPCommon.commands.diagnostics = {
+          keys = '<leader>e',
+          cmd = '<cmd>lua LSPCommon.toggle_diagnostics()<cr>'
+      }
     '';
   }
   # Autocompletion
