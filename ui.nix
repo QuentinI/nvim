@@ -43,15 +43,14 @@
     config = genericConfig "which-key";
   }
   # Dims inactive windows slightly
-  # https://github.com/sunjon/Shade.nvim
+  # https://github.com/TaDaa/vimade
   {
-    plugin = Shade-nvim;
-    config = lua ''
-      vim.o.termguicolors = true
-      require('shade').setup({
-        overlay_opacity = 70,
-        opacity_step = 1
-      })
+    plugin = vimade;
+    config = vimscript ''
+      set termguicolors
+      let g:vimade = {}
+      let g:vimade.fadelevel = 0.7
+      let g:vimade.enablesigns = 1
     '';
   }
   # Highlight changed lines in gutter
