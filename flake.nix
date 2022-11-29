@@ -51,6 +51,9 @@
           set tabstop=4
           set softtabstop=4
           set shiftwidth=4
+          " trigger `autoread` when files changes on disk
+          set autoread
+          autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() != 'c' | checktime | endif
         '';
       in
       rec {
