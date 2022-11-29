@@ -74,6 +74,7 @@ with utils;
     config = vimscript ''
       nnoremap <leader>ff <cmd>Telescope find_files<cr>
       nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+      nnoremap <leader>fs <cmd>Telescope lsp_dynamic_workspace_symbols<cr>
       nnoremap <leader><leader> <cmd>Telescope buffers<cr>
       nnoremap <leader>sr <cmd>Telescope reloader<cr>
     '';
@@ -82,5 +83,15 @@ with utils;
   # https://github.com/jghauser/mkdir.nvim
   {
     plugin = mkdir-nvim;
+  }
+  {
+    plugin = octo-nvim;
+    config = genericConfig "octo";
+  }
+  {
+    plugin = neogit;
+    config = genericConfig "neogit" + vimscript ''
+      nnoremap <leader>g <cmd>Neogit<cr>
+    '';
   }
 ]
