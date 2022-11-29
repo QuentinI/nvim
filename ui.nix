@@ -90,4 +90,8 @@
   # General UI glow-up
   # https://github.com/stevearc/dressing.nvim
   dressing-nvim
+  {
+    plugin = stabilize-nvim;
+    config = genericConfig "stabilize";
+  }
 ]
