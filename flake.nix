@@ -54,6 +54,9 @@
           " trigger `autoread` when files changes on disk
           set autoread
           autocmd FocusGained,BufEnter,CursorHold,CursorHoldI * if mode() != 'c' | checktime | endif
+          " GUI-specific
+          if exists("g:neovide")
+          endif
         '';
       in
       rec {

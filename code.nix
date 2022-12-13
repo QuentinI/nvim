@@ -193,6 +193,24 @@ in
   {
     plugin = rust-tools-nvim;
     config = lua ''
+      local checkOptions = {
+        -- wastes some disk space in exchange for not
+        -- locking you from using cargo while check is running
+        extraArgs = { "--target-dir", "target/check" }
+      }
+
+      -- use cargo-lints if available
+      if vim.fn.exists('$HOME/.cargo/bin/cargo-lints') == 1 or
+         vim.fn.executable('cargo-lints') == 1 then
+         checkOptions.overrideCommand = {
+           "cargo", "lints",
+           "clippy",
+           "--message-format", "json",
+           "--workspace",
+           "--all-targets",
+           table.unpack(checkOptions.extraArgs)
+         }
+      end
       require('rust-tools').setup({
         server = {
           on_attach = LSPCommon.on_attach,
@@ -200,10 +218,9 @@ in
           standalone = false,
           settings = {
             ["rust-analyzer"] = {
-              checkOnSave = {
-                -- wastes some disk space in exchange for not
-                -- locking you from using cargo while check is running
-                extraArgs = { "--target-dir", "target/check" }
+              checkOnSave = checkOptions,
+              diagnostics = {
+                disabled = { "inactive-code" }
               }
             }
           }

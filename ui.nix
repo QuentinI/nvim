@@ -44,15 +44,15 @@
   }
   # Dims inactive windows slightly
   # https://github.com/TaDaa/vimade
-  {
-    plugin = vimade;
-    config = vimscript ''
-      set termguicolors
-      let g:vimade = {}
-      let g:vimade.fadelevel = 0.7
-      let g:vimade.enablesigns = 1
-    '';
-  }
+  # {
+  #   plugin = vimade;
+  #   config = vimscript ''
+  #     set termguicolors
+  #     let g:vimade = {}
+  #     let g:vimade.fadelevel = 0.7
+  #     let g:vimade.enablesigns = 1
+  #   '';
+  # }
   # Highlight changed lines in gutter
   # https://github.com/lewis6991/gitsigns.nvim
   {
