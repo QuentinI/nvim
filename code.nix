@@ -199,18 +199,6 @@ in
         extraArgs = { "--target-dir", "target/check" }
       }
 
-      -- use cargo-lints if available
-      if vim.fn.exists('$HOME/.cargo/bin/cargo-lints') == 1 or
-         vim.fn.executable('cargo-lints') == 1 then
-         checkOptions.overrideCommand = {
-           "cargo", "lints",
-           "clippy",
-           "--message-format", "json",
-           "--workspace",
-           "--all-targets",
-           table.unpack(checkOptions.extraArgs)
-         }
-      end
       require('rust-tools').setup({
         server = {
           on_attach = LSPCommon.on_attach,
