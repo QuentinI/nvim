@@ -12,6 +12,8 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
+        # Theme bases
+        bases = [ "0" "1" "2" "3" "4" "5" "6" "7" "8" "9" "A" "B" "C" "D" "E" "F" ];
         # Utility functions
         utils = rec {
           vimscript = conf: conf;
@@ -23,12 +25,19 @@
           genericConfig = name: lua ''
             require('${name}').setup({})
           '';
+          baseToLua = theme: base:
+            let
+              basename = "base0${base}";
+              basevalue = builtins.getAttr basename theme;
+            in
+            "${basename} = '#${basevalue.hex.rgb}'";
+          themeToLua = theme: "{" + builtins.concatStringsSep ", " (map (baseToLua theme) bases) + "}";
         };
         # Settings not related to particular plugins
         commonRc = utils.vimscript ''
           let mapleader = " "
           " use system clipboard
-          set clipboard=unnamedplus 
+          set clipboard=unnamedplus
           " don't fold everything authomatically
           set nofoldenable
           " show line numbers in gutter,
@@ -72,13 +81,15 @@
           , neovim ? pkgs.neovim-unwrapped
             # any extra packages to include in final closure
           , runtime ? [ ]
+          , theme ? null
+          ,
           }:
           let
             # Assemble list of plugins
             plugins = builtins.concatLists (
               map
                 (file: import file {
-                  inherit utils pkgs;
+                  inherit utils pkgs theme;
                   plugins = pkgs.vimPlugins;
                 })
                 [ ./ui.nix ./navigation.nix ./code.nix ]
@@ -120,8 +131,10 @@
         devShells.default = pkgs.mkShell {
           buildInputs = [ packages.default ];
         };
-        overlay = _: prev: {
+        overlays.default = _: prev: {
           neovim = mkNeovim { pkgs = prev; };
+          inherit mkNeovim;
         };
       });
 }
+

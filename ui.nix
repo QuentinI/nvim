@@ -1,7 +1,7 @@
 # Plugins enchancing or tweaking the UI, nothing major.
 # I tried to put the most controversial stuff up top for
 # ease of deletion by enraged viewer.
-{ plugins, utils, ... }: with plugins; with utils;
+{ plugins, utils, theme, ... }: with plugins; with utils;
 [
   # Tabbar. Yes, I want to see tabs.
   # Just like in a _browser_. Fight me.
@@ -22,17 +22,6 @@
     config = lua ''
       vim.o.termguicolors = true
       require('notify').setup({})
-    '';
-  }
-  # Just the theme I use. Not controversial,
-  # more like usually something you'd want to change
-  # for yourself.
-  # https://github.com/shaunsingh/nord.nvim
-  {
-    plugin = nord-nvim;
-    config = vimscript ''
-      let g:nord_borders = v:true
-      colorscheme nord
     '';
   }
   # Show available options if you hang around indecisively
@@ -93,4 +82,15 @@
     plugin = stabilize-nvim;
     config = genericConfig "stabilize";
   }
-]
+] ++
+(
+  if isNull theme then
+    [ ]
+  else
+    [{
+      plugin = nvim-base16;
+      config = lua ''
+        require('base16-colorscheme').setup(${utils.themeToLua theme})
+      '';
+    }]
+)
