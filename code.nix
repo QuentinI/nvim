@@ -215,7 +215,6 @@ in
         }
       })
     '';
-    optional = true;
   }
   {
     plugin = crates-nvim;

@@ -85,7 +85,12 @@
 ] ++
 (
   if isNull theme then
-    [ ]
+    [{
+      plugin = nord-nvim;
+      config = vimscript ''
+        colorscheme nord
+      '';
+    }]
   else
     [{
       plugin = nvim-base16;
