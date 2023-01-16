@@ -75,6 +75,9 @@
     plugin = feline-nvim;
     config = genericConfig "feline";
   }
+  {
+    plugin = vim-devicons;
+  }
   # General UI glow-up
   # https://github.com/stevearc/dressing.nvim
   dressing-nvim
