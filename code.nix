@@ -32,7 +32,23 @@ in
   # queries on source code used by other plugins.
   # https://github.com/nvim-treesitter/nvim-treesitter
   {
-    plugin = nvim-treesitter;
+    plugin = (nvim-treesitter.withPlugins (
+      plugins: with plugins; [
+        bash
+        c
+        comment
+        json
+        json5
+        lua
+        nix
+        python
+        regex
+        rust
+        toml
+        vim
+        yaml
+      ]
+    ));
     config = vimscript ''
       set runtimepath+=${nixExt}
       set foldmethod=expr
