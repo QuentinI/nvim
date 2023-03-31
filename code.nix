@@ -136,7 +136,7 @@ in
       -- actual setup
       local lspconfig = require('lspconfig')
 
-      lspconfig['sumneko_lua'].setup({
+      lspconfig['lua_ls'].setup({
           on_attach = LSPCommon.on_attach,
           capabilities = LSPCommon.capabilities,
           settings = { Lua = { diagnostics = { globals = { 'vim' } } } }
@@ -208,6 +208,9 @@ in
   # https://github.com/simrat39/rust-tools.nvim
   {
     plugin = rust-tools-nvim;
+    # Workaround for something akin to this issue:
+    # https://github.com/wbthomason/packer.nvim/issues/698
+    optional = true;
     config = lua ''
       local checkOptions = {
         -- wastes some disk space in exchange for not
@@ -219,7 +222,6 @@ in
         server = {
           on_attach = LSPCommon.on_attach,
           capabilities = LSPCommon.capabilities,
-          standalone = false,
           settings = {
             ["rust-analyzer"] = {
               checkOnSave = checkOptions,

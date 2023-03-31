@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "nixpkgs";
-    flake-utils.url = "github:numtide/flake-utils/master";
+    flake-utils.url = "github:numtide/flake-utils";
     flake-compat = {
       url = "github:edolstra/flake-compat";
       flake = false;
@@ -124,6 +124,7 @@
               [
                 pkgs.rnix-lsp
                 pkgs.rust-analyzer
+                pkgs.lua-language-server
               ] ++ runtime;
           };
 
