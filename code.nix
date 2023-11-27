@@ -210,7 +210,7 @@ in
     plugin = rust-tools-nvim;
     # Workaround for something akin to this issue:
     # https://github.com/wbthomason/packer.nvim/issues/698
-    optional = true;
+    # optional = true;
     config = lua ''
       local checkOptions = {
         -- wastes some disk space in exchange for not

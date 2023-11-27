@@ -57,7 +57,7 @@ with utils;
               }
           },
           filesystem = {
-              follow_current_file = true,
+              follow_current_file = { enabled = true },
               group_empty_dirs = true,
           },
       })
