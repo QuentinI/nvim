@@ -1,0 +1,31 @@
+local api = vim.api
+
+local function nvim_loaded_buffers()
+    local result = {}
+    local buffers = api.nvim_list_bufs()
+    for _, buf in ipairs(buffers) do
+        if api.nvim_buf_is_loaded(buf) then
+            table.insert(result, buf)
+        end
+    end
+    return result
+end
+
+-- Kill the target buffer (or the current one if 0/nil)
+function buf_kill(target_buf, should_force)
+    if not should_force and vim.bo.modified then
+        return api.nvim_err_writeln('Buffer is modified. Force required.')
+    end
+    local command = 'bd'
+    if should_force then command = command .. '!' end
+    if target_buf == 0 or target_buf == nil then
+        target_buf = api.nvim_get_current_buf()
+    end
+    local buffers = nvim_loaded_buffers()
+    if #buffers == 1 then
+        api.nvim_command(command)
+        return
+    end
+    api.nvim_command("BufferLineCycleNext")
+    api.nvim_command(table.concat({ command, target_buf }, ' '))
+end

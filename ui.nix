@@ -5,14 +5,76 @@
 [
   # Tabbar. Yes, I want to see tabs.
   # Just like in a _browser_. Fight me.
-  # https://github.com/romgrk/barbar.nvim
+  # https://github.com/akinsho/bufferline.nvim
   {
-    plugin = barbar-nvim;
+    plugin = bufferline-nvim;
     config = vimscript ''
-      nnoremap <silent> <C-j> <Cmd>BufferPrevious<CR>
-      nnoremap <silent> <C-k> <Cmd>BufferNext<CR>
-      nnoremap <silent> <C-c> <Cmd>BufferClose<CR>
-      nnoremap <silent> <C-p> <Cmd>BufferPick<CR>
+      nnoremap <silent> <C-j> <Cmd>BufferLineCycleNext<CR>
+      nnoremap <silent> <C-k> <Cmd>BufferLineCyclePrev<CR>
+      nnoremap <silent> <C-c> <Cmd>lua buf_kill(0)<CR>
+      nnoremap <silent> <C-p> <Cmd>BufferLinePick<CR>
+    '' + lua ''
+      --vim.cmd.highlight({ "BufferLineIndicatorSelected", "guibg=#${theme.base00.hex.rgb}", "guifg=#${theme.base00.hex.rgb}" })
+      --vim.cmd.highlight({ "BufferLineSeparatorSelected", "guibg=#${theme.base00.hex.rgb}", "guifg=#${theme.base00.hex.rgb}" })
+      require("bufferline").setup({
+        highlights = {
+          background = {
+            bg = "#${theme.base00.hex.rgb}",
+            fg = "#${theme.base04.hex.rgb}",
+          },
+          tab = {
+            bg = "#${theme.base00.hex.rgb}",
+            fg = "#${theme.base04.hex.rgb}",
+          },
+          buffer = {
+            bg = "#${theme.base00.hex.rgb}",
+            fg = "#${theme.base04.hex.rgb}",
+          },
+          tab_selected = {
+            bg = "#${theme.base01.hex.rgb}",
+            fg = "#${theme.base04.hex.rgb}",
+          },
+          buffer_selected = {
+            bg = "#${theme.base01.hex.rgb}",
+            fg = "#${theme.base04.hex.rgb}",
+          },
+          buffer_visible = {
+            bg = "#${theme.base01.hex.rgb}",
+            fg = "#${theme.base04.hex.rgb}",
+          },
+          separator_selected = {
+            bg = "#${theme.base00.hex.rgb}",
+            fg = "#${theme.base00.hex.rgb}",
+          },
+          separator_visible = {
+            bg = "#${theme.base00.hex.rgb}",
+            fg = "#${theme.base00.hex.rgb}",
+          },
+          indicator_selected = {
+            bg = "#${theme.base00.hex.rgb}",
+            fg = "#${theme.base00.hex.rgb}",
+          },
+          indicator_visible = {
+            bg = "#${theme.base00.hex.rgb}",
+            fg = "#${theme.base00.hex.rgb}",
+          },
+          separator = {
+            bg = "#${theme.base00.hex.rgb}",
+            fg = "#${theme.base00.hex.rgb}",
+          },
+        },
+        options = {
+          show_close_icon = false,
+          show_buffer_close_icons = false,
+          offsets = {
+            {
+              filetype = "neo-tree",
+              text = "EXPLORER",
+              separator = '│',
+            },
+          }
+        }
+      })
     '';
   }
   # Notifications. Look, just hear me out...
@@ -91,8 +153,9 @@
   if isNull theme then
     [{
       plugin = nord-nvim;
-      config = vimscript ''
-        colorscheme nord
+      config = lua ''
+        vim.g.nord_uniform_diff_background = true
+        require('nord').set()
       '';
     }]
   else
@@ -100,6 +163,26 @@
       plugin = nvim-base16;
       config = lua ''
         require('base16-colorscheme').setup(${utils.themeToLua theme})
+        vim.cmd.highlight({ "Identifier", "guifg=#${theme.base04.hex.rgb}" })
+        vim.cmd.highlight({ "Statement", "guifg=#${theme.base04.hex.rgb}" })
+        vim.cmd.highlight({ "TSVariable", "guifg=#${theme.base04.hex.rgb}" })
+        vim.cmd.highlight({ "TSVariableBuiltin", "guifg=#${theme.base04.hex.rgb}" })
+        vim.cmd.highlight({ "TSNamespace", "guifg=#${theme.base04.hex.rgb}" })
+        vim.cmd.highlight({ "TSTag", "guifg=#${theme.base04.hex.rgb}" })
+
+        vim.cmd.highlight({ "TSConstant", "guifg=#${theme.base04.hex.rgb}", "gui=bold" })
+
+        vim.cmd.highlight({ "Todo", "guifg=#${theme.base00.hex.rgb}", "guibg=#${theme.base0A.hex.rgb}" })
+
+        vim.cmd.highlight({ "Character", "guifg=#${theme.base0B.hex.rgb}" })
+        vim.cmd.highlight({ "TSCharacter", "guifg=#${theme.base0B.hex.rgb}" })
+
+        vim.cmd.highlight({ "TSConstMacro", "guifg=#${theme.base0E.hex.rgb}", "gui=italic" })
+        vim.cmd.highlight({ "TSFuncMacro", "guifg=#${theme.base0E.hex.rgb}", "gui=italic" })
+
+        vim.cmd.highlight({ "TSUri", "guifg=#${theme.base0D.hex.rgb}" })
+        vim.cmd.highlight({ "TSType", "guifg=#${theme.base0D.hex.rgb}" })
+        vim.cmd.highlight({ "TSTypeBuiltin", "guifg=#${theme.base0D.hex.rgb}" })
       '';
     }]
 )

@@ -1,32 +1,8 @@
 # Plugins that deal with actual code part
 # of this whole deal. Mostly LSP stuff.
-{ plugins, utils, pkgs, ... }:
+{ plugins, utils, pkgs, system, inputs, ... }:
 with plugins;
 with utils;
-let
-  # Extensions to nix queries for treesitter
-  # to highlight embedded vimscript
-  # and lua in this very config
-  nixExt = pkgs.writeTextDir
-    "queries/nix/injections.scm"
-    ''
-      ;extends
-      (apply_expression
-        function: (_) @_func
-        argument: [
-          (string_expression (string_fragment) @lua)
-          (indented_string_expression (string_fragment) @lua)
-        ]
-        (#match? @_func "(^|\\.)lua$"))
-      (apply_expression
-        function: (_) @_func
-        argument: [
-          (string_expression (string_fragment) @vim)
-          (indented_string_expression (string_fragment) @vim)
-        ]
-        (#match? @_func "(^|\\.)vimscript$"))
-    '';
-in
 [
   # Treesitter. Fancier syntax highlighting,
   # queries on source code used by other plugins.
@@ -50,7 +26,6 @@ in
       ]
     ));
     config = vimscript ''
-      set runtimepath+=${nixExt}
       set foldmethod=expr
       set foldexpr=nvim_treesitter#foldexpr()
     '' + lua ''
@@ -175,18 +150,6 @@ in
       }
     '';
   }
-  # In the same vein, show a list of
-  # symbols defined in the document
-  # https://github.com/simrat39/symbols-outline.nvim
-  {
-    plugin = symbols-outline-nvim;
-    config = lua ''
-      LSPCommon.commands.outline = {
-          keys = '<leader>cs',
-          cmd = '<cmd>SymbolsOutline<CR>'
-      }
-    '';
-  }
   # Apply code actions easier
   # https://github.com/weilbith/nvim-code-action-menu
   {
@@ -212,6 +175,21 @@ in
     # https://github.com/wbthomason/packer.nvim/issues/698
     # optional = true;
     config = lua ''
+      function get_project_rustanalyzer_settings()
+        local handle = io.open(vim.fn.resolve(vim.fn.getcwd() .. '/./.rust-analyzer.json'))
+        if not handle then
+          return {}
+        end
+        local out = handle:read("*a")
+        handle:close()
+        local config = vim.json.decode(out)
+        if type(config) == "table" then
+          return config
+        end
+        return {}
+      end
+
+      -- TODO: why u not work
       local checkOptions = {
         -- wastes some disk space in exchange for not
         -- locking you from using cargo while check is running
@@ -223,12 +201,20 @@ in
           on_attach = LSPCommon.on_attach,
           capabilities = LSPCommon.capabilities,
           settings = {
-            ["rust-analyzer"] = {
-              checkOnSave = checkOptions,
-              diagnostics = {
-                disabled = { "inactive-code" }
-              }
-            }
+            ["rust-analyzer"] = vim.tbl_deep_extend(
+              "force",
+              {
+                checkOnSave = checkOptions,
+                diagnostics = {
+                  disabled = {
+                    "inactive-code",
+                    "unresolved-proc-macro"
+                  }
+                }
+              },
+              get_project_rustanalyzer_settings(),
+              {}
+            )
           }
         }
       })
@@ -270,6 +256,7 @@ in
       }
     '';
   }
+  vim-just
   # Autocompletion
   # https://github.com/hrsh7th/nvim-cmp
   nvim-snippy
@@ -278,6 +265,15 @@ in
   cmp-nvim-lsp
   cmp-cmdline
   cmp-snippy
+  {
+    plugin = sg-nvim;
+    config = lua ''
+      package.cpath = package.cpath .. ";" .. "${sg-nvim}/lib/?.so"
+      require("sg").setup()
+    '' + vimscript ''
+      nnoremap <leader>ss <cmd>lua require('sg.extensions.telescope').fuzzy_search_results()<CR>
+    '';
+  }
   lspkind-nvim
   {
     plugin = nvim-cmp;
@@ -331,8 +327,13 @@ in
               end, { 'i', 's' })
           }),
           sources = cmp.config.sources({
-              { name = 'nvim_lsp' }, { name = 'snippy' }
-          }, { { name = 'buffer' } }),
+              { name = 'nvim_lsp' },
+              { name = 'cody' },
+              { name = 'snippy' }
+          }, 
+          { 
+            { name = 'buffer' }
+          }),
           formatting = {
               format = lspkind.cmp_format({
                   mode = 'symbol_text',

@@ -1,5 +1,5 @@
 # Plugins relating to navigating around a codebase.
-{ plugins, utils, ... }:
+{ plugins, utils, theme, ... }:
 with plugins;
 with utils;
 [
@@ -24,26 +24,52 @@ with utils;
       vim.g.neo_tree_remove_legacy_commands = 1
 
       vim.fn.sign_define('DiagnosticSignError', {
-          text = ' ',
+          text = '${utils.icons.diagnostics.error}',
           texthl = 'DiagnosticSignError'
       })
-      vim.fn.sign_define('DiagnosticSignWarn',
-                         { text = ' ', texthl = 'DiagnosticSignWarn' })
-      vim.fn.sign_define('DiagnosticSignInfo',
-                         { text = ' ', texthl = 'DiagnosticSignInfo' })
-      vim.fn.sign_define('DiagnosticSignHint',
-                         { text = '', texthl = 'DiagnosticSignHint' })
+      vim.fn.sign_define('DiagnosticSignWarn', {
+          text = '${utils.icons.diagnostics.warn}', 
+          texthl = 'DiagnosticSignWarn'
+      })
+      vim.fn.sign_define('DiagnosticSignInfo', {
+          text = '${utils.icons.diagnostics.info}',
+          texthl = 'DiagnosticSignInfo'  
+      })
+      vim.fn.sign_define('DiagnosticSignHint', {
+          text = '${utils.icons.diagnostics.hint}',
+          texthl = 'DiagnosticSignHint'
+      })
 
       require('neo-tree').setup({
           close_if_last_window = true,
+          sources = {
+            "filesystem",
+            "buffers",
+            "git_status",
+            "document_symbols",
+          },
+          source_selector = {
+            winbar = true,
+            content_layout = "center",
+            tabs_layout = "equal",
+            show_separator_on_edge = true,
+            sources = {
+              { source = "filesystem", display_name = "󰉓" },
+              { source = "buffers", display_name = "󰈙" },
+              { source = "git_status", display_name = "" },
+              { source = "document_symbols", display_name = "" },
+              { source = "diagnostics", display_name = "󰒡" },
+            },
+          },
           default_component_configs = {
               name = {
                   trailing_slash = true,
               },
               git_status = {
                   symbols = {
-                      added = "✚",
-                      modified = "",
+                      added = "${utils.icons.git.added}",
+                      modified = "${utils.icons.git.modified}",
+                      deleted = "${utils.icons.git.deleted}",
                   }
               }
           },
@@ -54,15 +80,34 @@ with utils;
                       'toggle_node',
                       nowait = false
                   },
+                  ['<S-j>'] = {
+                      'next_source',
+                      nowait = false
+                  },
+                  ['<S-k>'] = {
+                      'prev_source',
+                      nowait = false
+                  }
               }
           },
           filesystem = {
               follow_current_file = { enabled = true },
               group_empty_dirs = true,
-          },
+              filtered_items = {
+                hide_dotfiles = false,
+                hide_gitignored = false,
+              },
+          }
       })
 
-      vim.cmd([[nnoremap <leader>v :Neotree reveal toggle=true<cr>]])
+      vim.cmd.highlight({ "NeoTreeTabInactive", "guibg=#${theme.base00.hex.rgb}" })
+      vim.cmd.highlight({ "NeoTreeTabActive",   "guibg=#${theme.base00.hex.rgb}" })
+      vim.cmd.highlight({ "NeoTreeTabSeparatorActive", "guibg=#${theme.base00.hex.rgb}", "guifg=#${theme.base00.hex.rgb}" })
+      vim.cmd.highlight({ "NeoTreeTabSeparatorInactive", "guibg=#${theme.base00.hex.rgb}", "guifg=#${theme.base00.hex.rgb}" })
+
+      vim.keymap.set('n', '<Leader>v', function()
+        vim.cmd[[Neotree reveal toggle=true]]
+      end)
     '';
   }
   # Project management. It's here mostly because it
@@ -98,6 +143,7 @@ with utils;
     plugin = octo-nvim;
     config = genericConfig "octo";
   }
+  diffview-nvim
   # Poor man's magit
   # https://github.com/TimUntersberger/neogit
   {
