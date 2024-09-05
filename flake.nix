@@ -126,7 +126,9 @@
               package
             ] ++ pkgs.lib.optionals withLanguageServers
               [
-                pkgs.rnix-lsp
+                pkgs.haskellPackages.tidal
+                pkgs.haskellPackages.ghci
+                pkgs.nil
                 pkgs.rust-analyzer
                 pkgs.lua-language-server
               ] ++ runtime;

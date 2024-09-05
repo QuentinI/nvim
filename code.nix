@@ -26,6 +26,18 @@ let
         ]
         (#match? @_func "(^|\\.)vimscript$"))
     '';
+  vim-tidal = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-tidal";
+    src = pkgs.fetchFromGitHub {
+      owner = "tidalcycles";
+      repo = "vim-tidal";
+      rev = "f15f14b12176d8f1028d0596b031c3d6e1201c3b";
+      hash = "sha256-fLaBMm6jSLHytIH5IUQtUfi3kaPLdruO3cxv4UcjEO4=";
+    };
+    patchPhase = ''
+      rm Makefile
+    '';
+  };
 in
 [
   # Treesitter. Fancier syntax highlighting,
@@ -147,7 +159,7 @@ in
           capabilities = LSPCommon.capabilities,
       })
 
-      lspconfig['rnix'].setup({
+      lspconfig['nil'].setup({
           on_attach = LSPCommon.on_attach,
           capabilities = LSPCommon.capabilities,
       })
@@ -360,6 +372,12 @@ in
 
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
       LSPCommon.capabilities = capabilities
+    '';
+  }
+  {
+    plugin = vim-tidal;
+    config = vimscript ''
+      let g:tidal_target = "terminal"
     '';
   }
 ]
