@@ -100,11 +100,15 @@ with utils;
             local buf_set_keymap = vim.api.nvim_buf_set_keymap
             local opts = { noremap = true, silent = true }
 
+            vim.lsp.inlay_hint.enable(true)
+
             for _, hook in pairs(LSPCommon.hooks) do hook(client, bufnr) end
 
             for _, bind in pairs(LSPCommon.commands) do
                 buf_set_keymap(bufnr, 'n', bind.keys, bind.cmd, opts)
             end
+
+            buf_set_keymap(bufnr, 'v', "<leader>ca", "<cmd>lua vim.lsp.buf.code_action()<CR>", opts)
         end
       }
 
@@ -122,10 +126,6 @@ with utils;
           capabilities = LSPCommon.capabilities,
       })
 
-      lspconfig['rnix'].setup({
-          on_attach = LSPCommon.on_attach,
-          capabilities = LSPCommon.capabilities,
-      })
     '';
   }
   # Show status of LSP server when loading
@@ -170,7 +170,7 @@ with utils;
   # Improved experience for rust-analyzer
   # https://github.com/simrat39/rust-tools.nvim
   {
-    plugin = rust-tools-nvim;
+    plugin = rustaceanvim;
     # Workaround for something akin to this issue:
     # https://github.com/wbthomason/packer.nvim/issues/698
     # optional = true;
@@ -196,11 +196,17 @@ with utils;
         extraArgs = { "--target-dir", "target/check" }
       }
 
-      require('rust-tools').setup({
+      vim.g.rustaceanvim = {
         server = {
-          on_attach = LSPCommon.on_attach,
+          on_attach = function(client, bufnr)
+            LSPCommon.on_attach(client, bufnr)
+            local buf_set_keymap = vim.api.nvim_buf_set_keymap
+            local opts = { noremap = true, silent = true }
+            buf_set_keymap(bufnr, 'n', "<leader>ca", "<cmd>lua vim.cmd.RustLsp('codeAction')<CR>", opts)
+            buf_set_keymap(bufnr, 'n', "<leader>cx", "<cmd>lua vim.cmd.RustLsp('expandMacro')<CR>", opts)
+          end,
           capabilities = LSPCommon.capabilities,
-          settings = {
+          default_settings = {
             ["rust-analyzer"] = vim.tbl_deep_extend(
               "force",
               {
@@ -217,7 +223,7 @@ with utils;
             )
           }
         }
-      })
+      }
     '';
   }
   {

@@ -131,12 +131,6 @@
       })
     '';
   }
-  # Statusline glow-up
-  # https://github.com/feline-nvim/feline.nvim
-  {
-    plugin = feline-nvim;
-    config = genericConfig "feline";
-  }
 
   {
     plugin = nvim-web-devicons;
@@ -160,7 +154,7 @@
     }]
   else
     [{
-      plugin = nvim-base16;
+      plugin = base16-nvim;
       config = lua ''
         require('base16-colorscheme').setup(${utils.themeToLua theme})
         vim.cmd.highlight({ "Identifier", "guifg=#${theme.base04.hex.rgb}" })

@@ -161,7 +161,6 @@
                 pkgs.nodejs_20
               ] ++ pkgs.lib.optionals withLanguageServers
                 [
-                  pkgs.rnix-lsp
                   pkgs.rust-analyzer
                   pkgs.lua-language-server
                 ] ++ runtime;
