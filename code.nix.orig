@@ -3,6 +3,33 @@
 { plugins, utils, pkgs, system, inputs, ... }:
 with plugins;
 with utils;
+<<<<<<< HEAD
+||||||| 4773272
+let
+  # Extensions to nix queries for treesitter
+  # to highlight embedded vimscript
+  # and lua in this very config
+  nixExt = pkgs.writeTextDir
+    "queries/nix/injections.scm"
+    ''
+      ;extends
+      (apply_expression
+        function: (_) @_func
+        argument: [
+          (string_expression (string_fragment) @lua)
+          (indented_string_expression (string_fragment) @lua)
+        ]
+        (#match? @_func "(^|\\.)lua$"))
+      (apply_expression
+        function: (_) @_func
+        argument: [
+          (string_expression (string_fragment) @vim)
+          (indented_string_expression (string_fragment) @vim)
+        ]
+        (#match? @_func "(^|\\.)vimscript$"))
+    '';
+in
+=======
 let
   # Extensions to nix queries for treesitter
   # to highlight embedded vimscript
@@ -39,6 +66,7 @@ let
     '';
   };
 in
+>>>>>>> a2810f32fb2f50885946172fa63abbf8267d726b
 [
   # Treesitter. Fancier syntax highlighting,
   # queries on source code used by other plugins.
@@ -162,10 +190,18 @@ in
           capabilities = LSPCommon.capabilities,
       })
 
+<<<<<<< HEAD
+||||||| 4773272
+      lspconfig['rnix'].setup({
+          on_attach = LSPCommon.on_attach,
+          capabilities = LSPCommon.capabilities,
+      })
+=======
       lspconfig['nil'].setup({
           on_attach = LSPCommon.on_attach,
           capabilities = LSPCommon.capabilities,
       })
+>>>>>>> a2810f32fb2f50885946172fa63abbf8267d726b
     '';
   }
   # Show status of LSP server when loading
